@@ -6,10 +6,10 @@ const connstring = config.mongoConnectionString;
 const connectWithRetry = function () {
     return mongoose.connect(connstring)
         .then(() => {
-            console.log("MongoDB connected successfully");
+            console.log('MongoDB connected');
         })
         .catch((err) => {
-            console.error('Failed to connect to mongo on startup - retrying in 5 sec', err.message);
+            console.error('MongoDB connection failed, retrying in 5s:', err.message);
             setTimeout(connectWithRetry, 5000);
         });
 };

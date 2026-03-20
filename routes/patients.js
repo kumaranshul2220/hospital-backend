@@ -9,11 +9,9 @@ router.use(authenticate);
 router.post('/register', authorize(['Super Admin', 'Admin', 'Receptionist']), patientController.registerPatient);
 router.get('/', authorize(['Super Admin', 'Admin', 'Doctor', 'Nurse', 'Receptionist']), patientController.getPatients);
 
-// IPD
 router.post('/admit', authorize(['Super Admin', 'Admin', 'Doctor', 'Nurse']), patientController.admitPatient);
 router.post('/discharge', authorize(['Super Admin', 'Admin', 'Doctor']), patientController.dischargePatient);
 
-// OPD
 router.post('/appointment', authorize(['Super Admin', 'Admin', 'Receptionist']), patientController.scheduleAppointment);
 
 module.exports = router;

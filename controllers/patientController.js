@@ -3,11 +3,9 @@ const Admission = require('../models/Admission');
 const Appointment = require('../models/Appointment');
 const Bed = require('../models/Bed');
 
-// Patient Registration
 exports.registerPatient = async (req, res) => {
     try {
-        const patientData = req.body;
-        const patient = new Patient(patientData);
+        const patient = new Patient(req.body);
         await patient.save();
         res.status(201).json({ message: 'Patient registered successfully', patient });
     } catch (err) {
@@ -15,28 +13,18 @@ exports.registerPatient = async (req, res) => {
     }
 };
 
-// IPD Admission
 exports.admitPatient = async (req, res) => {
     try {
         const { patientId, wardId, bedId, attendingDoctorId, reasonForAdmission } = req.body;
 
-        // Check bed availability
         const bed = await Bed.findById(bedId);
         if (!bed || bed.status !== 'Available') {
             return res.status(400).json({ message: 'Bed is not available' });
         }
 
-        const admission = new Admission({
-            patientId,
-            wardId,
-            bedId,
-            attendingDoctorId,
-            reasonForAdmission
-        });
-
+        const admission = new Admission({ patientId, wardId, bedId, attendingDoctorId, reasonForAdmission });
         await admission.save();
 
-        // Update bed status
         bed.status = 'Occupied';
         await bed.save();
 
@@ -46,7 +34,6 @@ exports.admitPatient = async (req, res) => {
     }
 };
 
-// IPD Discharge
 exports.dischargePatient = async (req, res) => {
     try {
         const { admissionId, dischargeSummary } = req.body;
@@ -61,7 +48,6 @@ exports.dischargePatient = async (req, res) => {
         admission.dischargeSummary = dischargeSummary;
         await admission.save();
 
-        // Release bed
         const bed = await Bed.findById(admission.bedId);
         if (bed) {
             bed.status = 'Available';
@@ -74,11 +60,9 @@ exports.dischargePatient = async (req, res) => {
     }
 };
 
-// OPD Appointment
 exports.scheduleAppointment = async (req, res) => {
     try {
-        const appointmentData = req.body;
-        const appointment = new Appointment(appointmentData);
+        const appointment = new Appointment(req.body);
         await appointment.save();
         res.status(201).json({ message: 'Appointment scheduled successfully', appointment });
     } catch (err) {
@@ -86,7 +70,6 @@ exports.scheduleAppointment = async (req, res) => {
     }
 };
 
-// Get All Patients with filters
 exports.getPatients = async (req, res) => {
     try {
         const patients = await Patient.find();
